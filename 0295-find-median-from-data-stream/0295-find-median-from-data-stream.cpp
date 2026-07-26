@@ -1,39 +1,76 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class MedianFinder {
 public:
-    priority_queue<int> maxHeap; //to get the largest number in the lefthalf
-    priority_queue<int, vector<int>, greater<int>> minHeap; //to get the largest number in the right half
-    
-    void addNum(int num) {
-        if(maxHeap.empty() || num <= maxHeap.top()){ //if new number is smaller than top of left half then push it into the left half ie, maxHeap side
-            maxHeap.push(num);
-        }else {
-            minHeap.push(num); //else push it to the right side ie, minHeap
-        }
-        //SIZE BALANCING ->  //Maxheap ka size minheap ke size se ek se jyada bada ni hona chahiye if dono ke size same honge toh hi toh hme middle element milega dono ke top ka jo ki medain hoga
+    // Left half -> Max Heap
+    // Top() = Largest element of the left half
+    priority_queue<int> maxHeap;
 
-        //MAx heap ya toh barabar hoga ya sirf ek bada hoga
-        if(maxHeap.size() > minHeap.size()+1){
-            minHeap.push(maxHeap.top()); //left part ka sabse bada number right part mein daal do so that maxHeap and minHeap boundary can be shift 1 by right
+    // Right half -> Min Heap
+    // Top() = Smallest element of the right half
+    priority_queue<int, vector<int>, greater<int>> minHeap;
+
+    void addNum(int num) {
+
+        // ---------------- STEP 1 : INSERTION ----------------
+        // If maxHeap is empty OR new number belongs to the left half,
+        // insert it into maxHeap.
+        if (maxHeap.empty() || num <= maxHeap.top()) {
+            maxHeap.push(num);
+        }
+        // Otherwise, insert it into the right half.
+        else {
+            minHeap.push(num);
+        }
+
+        // ---------------- STEP 2 : SIZE BALANCING ----------------
+        // We always maintain:
+        //
+        // 1. maxHeap.size() == minHeap.size()
+        //                OR
+        // 2. maxHeap.size() == minHeap.size() + 1
+        //
+        // i.e. Left half is either equal in size to the right half
+        // or has exactly one extra element.
+
+        // If left half becomes too large,
+        // move its boundary element (largest element)
+        // to the right half.
+        if (maxHeap.size() > minHeap.size() + 1) {
+            minHeap.push(maxHeap.top());
             maxHeap.pop();
         }
-        //Min heap ka size barabar ya ek chhota ho skta h but bada nhi ho skta
-        if(minHeap.size() > maxHeap.size()){
-            maxHeap.push(minHeap.top()); //agar hogya toh sabse chhota element min heap(right side ka) left part (max heap) mein bhej do.. ie, maxHeap and minHeap dono ki boundary ko left shift kardo by 1.
+
+        // If right half becomes larger than left half,
+        // move its boundary element (smallest element)
+        // to the left half.
+        if (minHeap.size() > maxHeap.size()) {
+            maxHeap.push(minHeap.top());
             minHeap.pop();
         }
     }
-    
+
     double findMedian() {
-        if(minHeap.size() == maxHeap.size()){ //if dono ka size same that means even numbers hain total so.. dono ke top elements hi medain honge.. toh uska avg leliya
-            return (minHeap.top() + maxHeap.top())/2.0;
-        } 
-        return maxHeap.top(); //agar maxHeap ka size ek bada h toh numbers odd hain aur us case mein maxHeap ka top hi median element hoga
-    }     
+
+        // ---------------- MEDIAN ----------------
+        // Even number of elements:
+        // Median = Average of both boundary elements.
+        if (maxHeap.size() == minHeap.size()) {
+            return (maxHeap.top() + minHeap.top()) / 2.0;
+        }
+
+        // Odd number of elements:
+        // Left half always contains one extra element,
+        // therefore its top is the median.
+        return maxHeap.top();
+    }
 };
 
 /**
  * Your MedianFinder object will be instantiated and called as such:
+ *
  * MedianFinder* obj = new MedianFinder();
  * obj->addNum(num);
- * double param_2 = obj->findMedian();
+ * double median = obj->findMedian();
  */
