@@ -1,7 +1,7 @@
 class Solution {
 public:
     int singleNumber(vector<int>& nums) {
-        map<int, int> freq;
+        unordered_map<int, int> freq;
         for (int x : nums) freq[x]++;
 
         for (auto p : freq)
