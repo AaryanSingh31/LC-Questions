@@ -3,10 +3,11 @@ public:
     int ans;
     unordered_set<int> up, upleftDiag,upRightDiag;
 
-    int solve(vector<string> &board, int row, int &cnt){
+    int solve(vector<string> &board, int row){
         if(row == board.size()){
-            return cnt++;
+            return 1;
         }
+        int cnt = 0;
         for(int col = 0; col < board[0].size(); col++){
             int upDir = col;
             int leftDiag = row+col;
@@ -18,7 +19,7 @@ public:
                 upRightDiag.insert(antiLDiag);
                 
                 board[row][col] = 'Q';
-                solve(board, row+1, cnt);
+                cnt += solve(board, row+1);
 
                 up.erase(upDir);
                 upleftDiag.erase(leftDiag);
@@ -32,8 +33,7 @@ public:
     }
     int totalNQueens(int n) {
         vector<string> board(n, string(n, '.'));
-        int row = 0, cnt = 0;
-        solve(board, row, cnt);
-        return cnt;
+        int row = 0;
+        return solve(board, row);
     }
 };
